@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -114,6 +115,19 @@ public class BoxServiceImpl implements BoxService {
     @Bulkhead(name = BACKEND_A)
     @Retry(name = BACKEND_A)
     public String failure() {
+        throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "This is a remote exception");
+    }
+
+    @Override
+    @Retry(name = BACKEND_A)
+    public String retrySuccess() {
+        return ("Hello World With Retry");
+    }
+
+    @Override
+    @Retry(name = BACKEND_A)
+    public String retryFailure() {
+        log.info("Current Timestamp for Retry: {}", Instant.now());
         throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "This is a remote exception");
     }
 }

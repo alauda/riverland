@@ -25,4 +25,10 @@ public interface BoxService {
     @Bulkhead(name = BoxServiceImpl.BACKEND_A)
     @Retry(name = BoxServiceImpl.BACKEND_A)
     String failure();
+
+    @Retry(name = BoxServiceImpl.BACKEND_A)
+    String retrySuccess();
+
+    @Retry(name = BoxServiceImpl.BACKEND_A)
+    String retryFailure();
 }

@@ -15,44 +15,7 @@ management:
     circuitbreakers.enabled: true
     ratelimiters:
       enabled: true
-#    tags:
-#      service: ${spring.application.name}
-#      namespace: ${SOURCE_SERVICE_NAMESPACE:ms2}
-#      pod: ${HOSTNAME}
-#      client_name: unkown
-#      client_namespace: unkown
-#    distribution:
-#      percentiles-histogram:
-#        http:
-#          server:
-#            requests: true
-    #      percentiles:
-    #        http:
-    #          server:
-    #            request: 0.95,0.99
-    #          client:
-    #            request: 0.95,0.99
-#    web:
-#      server:
-#        request:
-#          autotime:
-#            percentiles: 0.5,0.95,0.99
-#    enable:
-#      jvm: false
-#  health:
-#    probes:
-#      enabled: true
-# the services url
-client:
-  services:
-    producer: "producer:8021"
-    crossProducer: "producer.alan-foo:8021"
-    httpbin: httpbin.alan-test
 spring:
-#  zipkin:
-#    baseUrl: http://118.24.201.218:9411
-#    service:
-#      name: ${spring.application.name}.${SOURCE_SERVICE_NAMESPACE}
   cloud:
     kubernetes:
       service:
@@ -60,17 +23,6 @@ spring:
         namespace: ${SOURCE_SERVICE_NAMESPACE:default_unkown}
       discovery:
         all-namespaces: true
-#opentracing:
-#  jaeger:
-#    const-sampler:
-#      decision: true
-#    enabled: true
-#    log-spans: true
-#    http-sender:
-#      url: "http://118.24.201.218:9411/api/traces"
-#    udp-sender:
-#      host: ${JAEGER_HOST:localhost}
-#      port: ${JAEGER_PORT:6831}
 bean:
   message: Hello
 resilience4j.circuitbreaker:
@@ -81,7 +33,7 @@ resilience4j.circuitbreaker:
       minimumNumberOfCalls: 5
       permittedNumberOfCallsInHalfOpenState: 3
       automaticTransitionFromOpenToHalfOpenEnabled: true
-      waitDurationInOpenState: 5s
+      waitDurationInOpenState: 30000
 #      maxWaitDurationInHalfOpenState: 5
       failureRateThreshold: 50
       eventConsumerBufferSize: 10
@@ -116,7 +68,7 @@ resilience4j.retry:
   configs:
     default:
       maxRetryAttempts: 3
-      waitDuration: 100
+      waitDuration: 1000
       retryExceptions:
         - org.springframework.web.client.HttpServerErrorException
         - java.util.concurrent.TimeoutException

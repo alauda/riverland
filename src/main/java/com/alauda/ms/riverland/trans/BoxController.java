@@ -68,4 +68,14 @@ public class BoxController {
     public String breaker() {
         return service.failure();
     }
+
+    @GetMapping("/retry/success")
+    public String retrySuccess() {
+        return service.retrySuccess();
+    }
+
+    @GetMapping("/retry/failure")
+    public String retryFailure() {
+        return service.retryFailure();
+    }
 }
