@@ -1,0 +1,189 @@
+server:
+  port: 8080
+  names: riverland
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    enabled: true
+  health:
+    circuitbreakers.enabled: true
+    ratelimiters:
+      enabled: true
+#    tags:
+#      service: ${spring.application.name}
+#      namespace: ${SOURCE_SERVICE_NAMESPACE:ms2}
+#      pod: ${HOSTNAME}
+#      client_name: unkown
+#      client_namespace: unkown
+#    distribution:
+#      percentiles-histogram:
+#        http:
+#          server:
+#            requests: true
+    #      percentiles:
+    #        http:
+    #          server:
+    #            request: 0.95,0.99
+    #          client:
+    #            request: 0.95,0.99
+#    web:
+#      server:
+#        request:
+#          autotime:
+#            percentiles: 0.5,0.95,0.99
+#    enable:
+#      jvm: false
+#  health:
+#    probes:
+#      enabled: true
+# the services url
+client:
+  services:
+    producer: "producer:8021"
+    crossProducer: "producer.alan-foo:8021"
+    httpbin: httpbin.alan-test
+spring:
+#  zipkin:
+#    baseUrl: http://118.24.201.218:9411
+#    service:
+#      name: ${spring.application.name}.${SOURCE_SERVICE_NAMESPACE}
+  cloud:
+    kubernetes:
+      service:
+        name: ${spring.application.name:default_unkown}
+        namespace: ${SOURCE_SERVICE_NAMESPACE:default_unkown}
+      discovery:
+        all-namespaces: true
+#opentracing:
+#  jaeger:
+#    const-sampler:
+#      decision: true
+#    enabled: true
+#    log-spans: true
+#    http-sender:
+#      url: "http://118.24.201.218:9411/api/traces"
+#    udp-sender:
+#      host: ${JAEGER_HOST:localhost}
+#      port: ${JAEGER_PORT:6831}
+bean:
+  message: Hello
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      minimumNumberOfCalls: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 5s
+#      maxWaitDurationInHalfOpenState: 5
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.util.concurrent.TimeoutException
+        - java.io.IOException
+        - java.net.ConnectException
+      ignoreExceptions:
+        - com.alauda.ms.riverland.robwin.exception.BusinessException
+    shared:
+      slidingWindowSize: 100
+      permittedNumberOfCallsInHalfOpenState: 30
+#      waitDurationInOpenState: 1s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      ignoreExceptions:
+        - com.alauda.ms.riverland.robwin.exception.BusinessException
+  instances:
+    backendA:
+      baseConfig: default
+    backendB:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      recordFailurePredicate: com.alauda.ms.riverland.robwin.exception.RecordFailurePredicate
+resilience4j.retry:
+  configs:
+    default:
+      maxRetryAttempts: 3
+      waitDuration: 100
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.util.concurrent.TimeoutException
+        - java.io.IOException
+      ignoreExceptions:
+        - com.alauda.ms.riverland.robwin.exception.BusinessException
+  instances:
+    backendA:
+      baseConfig: default
+    backendB:
+      baseConfig: default
+resilience4j.bulkhead:
+  configs:
+    default:
+      maxConcurrentCalls: 100
+  instances:
+    backendA:
+      maxConcurrentCalls: 10
+    backendB:
+      maxWaitDuration: 10ms
+      maxConcurrentCalls: 20
+
+resilience4j.thread-pool-bulkhead:
+  configs:
+    default:
+      maxThreadPoolSize: 4
+      coreThreadPoolSize: 2
+      queueCapacity: 2
+  instances:
+    backendA:
+      baseConfig: default
+    backendB:
+      maxThreadPoolSize: 1
+      coreThreadPoolSize: 1
+      queueCapacity: 1
+
+resilience4j.ratelimiter:
+  configs:
+    default:
+      registerHealthIndicator: true
+      limitForPeriod: 10
+      limitRefreshPeriod: 5s
+      timeoutDuration: 1s
+      eventConsumerBufferSize: 100
+  instances:
+    backendA:
+      baseConfig: default
+    backendB:
+      limitForPeriod: 6
+      limitRefreshPeriod: 5000ms
+      timeoutDuration: 3s
+    processService:
+      limitForPeriod: 20
+      limitRefreshPeriod: 1s
+      timeoutDuration: 0
+resilience4j.timelimiter:
+  configs:
+    default:
+      cancelRunningFuture: false
+      timeoutDuration: 2s
+  instances:
+    backendA:
+      baseConfig: default
+    backendB:
+      baseConfig: default
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web: trace
