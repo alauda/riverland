@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: riverland
+  cloud:
+    kubernetes:
+      config:
+        name: ${spring.application.name}
+        namespace: ${SOURCE_SERVICE_NAMESPACE:ms}
+#        sources:
+#          # Spring Cloud Kubernetes looks up a ConfigMap named c1 in namespace default-namespace
+#          - name: db-config
+#          # Spring Cloud Kubernetes looks up a ConfigMap named default-name in whatever namespace n2
+#          - namespace: mq-config
