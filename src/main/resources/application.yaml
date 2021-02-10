@@ -9,12 +9,21 @@ management:
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
+      # readiness group
+      group:
+        readiness:
+          include: readinessState,db,redis
   metrics:
     enabled: true
   health:
-    circuitbreakers.enabled: true
+    showDetails: always
+    circuitbreakers:
+      enabled: true
     ratelimiters:
       enabled: true
+
 spring:
   cloud:
     kubernetes:
@@ -23,6 +32,16 @@ spring:
         namespace: ${SOURCE_SERVICE_NAMESPACE:default_unkown}
       discovery:
         all-namespaces: true
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_INSTANCE:ms}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:my-secret-pw}
+  redis:
+    database: 0
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    timeout: 6000
 bean:
   message: Hello
 resilience4j.circuitbreaker:
