@@ -38,6 +38,15 @@ http://localhost:8080/actuator/health/liveness
 - Readinessprobe
 http://localhost:8080/actuator/health/readiness
 
+### 环境变量
+- Mysql
+MYSQL_HOST 服务名,默认localhost  
+MYSQL_PORT 端口,默认3306  
+MYSQL_USERNAME 用户名,默认root  
+MYSQL_PASSWORD 密码,默认my-secret-pw  
+- Redis
+REDIS_HOST 服务名  
+REDIS_PORT 端口,默认6379   
 ### 停止Mysql
 Liveness -> Down
 
