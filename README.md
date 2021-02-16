@@ -47,6 +47,7 @@ MYSQL_PASSWORD 密码,默认my-secret-pw
 - Redis
 REDIS_HOST 服务名  
 REDIS_PORT 端口,默认6379   
+
 ### 停止Mysql
 Liveness -> Down
 
